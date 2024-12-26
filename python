@@ -1,0 +1,119 @@
+import datetime
+
+# 儲存所有支出記錄的列表
+expense_records = []
+
+def add_expense():
+    """記錄支出"""
+    try:
+        amount = float(input("請輸入支出金額: "))
+    except ValueError:
+        print("無效的金額，請重新輸入!")
+        return
+
+    categories = ['食物', '交通', '娛樂', '健康', '其他']
+    print("選擇支出類別:")
+    for i, category in enumerate(categories, 1):
+        print(f"{i}. {category}")
+    
+    try:
+        category_index = int(input("請選擇支出類別 (1-5): "))
+        category = categories[category_index - 1]
+    except (ValueError, IndexError):
+        print("無效的選擇，請重新輸入!")
+        return
+
+    date_str = input("請輸入日期 (YYYY-MM-DD)，留空使用今天: ")
+    if not date_str:
+        date_str = str(datetime.date.today())
+    
+    try:
+        date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        print("日期格式錯誤，請重新輸入!")
+        return
+
+    expense_records.append({
+        'amount': amount,
+        'category': category,
+        'date': date
+    })
+    print(f"已記錄支出: {amount} 元，類別: {category}, 日期: {date}")
+
+def show_expenses_by_category():
+    """顯示某一類別的支出總額"""
+    categories = ['食物', '交通', '娛樂', '健康', '其他']
+    print("選擇查詢的支出類別:")
+    for i, category in enumerate(categories, 1):
+        print(f"{i}. {category}")
+    
+    try:
+        category_index = int(input("請選擇類別 (1-5): "))
+        category = categories[category_index - 1]
+    except (ValueError, IndexError):
+        print("無效的選擇!")
+        return
+    
+    total = sum(record['amount'] for record in expense_records if record['category'] == category)
+    print(f"在 '{category}' 類別中的總支出是: {total} 元")
+
+def show_expenses_by_date_range():
+    """根據日期範圍顯示支出"""
+    start_date_str = input("請輸入開始日期 (YYYY-MM-DD): ")
+    end_date_str = input("請輸入結束日期 (YYYY-MM-DD): ")
+    
+    try:
+        start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    except ValueError:
+        print("日期格式錯誤，請重新輸入!")
+        return
+
+    total = 0
+    for record in expense_records:
+        if start_date <= record['date'] <= end_date:
+            total += record['amount']
+            print(f"日期: {record['date']}, 類別: {record['category']}, 金額: {record['amount']} 元")
+
+    print(f"\n日期範圍內的總支出是: {total} 元")
+
+def generate_report():
+    """生成簡單的報表，列出所有支出"""
+    if not expense_records:
+        print("沒有記錄任何支出。")
+        return
+    
+    total_expenses = 0
+    for record in expense_records:
+        print(f"日期: {record['date']}, 類別: {record['category']}, 金額: {record['amount']} 元")
+        total_expenses += record['amount']
+    
+    print(f"\n總支出: {total_expenses} 元")
+
+def main():
+    while True:
+        print("\n--- 財務記帳工具 ---")
+        print("1. 記錄支出")
+        print("2. 查詢支出類別")
+        print("3. 查詢日期範圍支出")
+        print("4. 生成報表")
+        print("5. 退出")
+        
+        choice = input("請選擇操作: ")
+
+        if choice == '1':
+            add_expense()
+        elif choice == '2':
+            show_expenses_by_category()
+        elif choice == '3':
+            show_expenses_by_date_range()
+        elif choice == '4':
+            generate_report()
+        elif choice == '5':
+            print("退出程式...")
+            break
+        else:
+            print("無效的選擇，請重新輸入!")
+
+if __name__ == "__main__":
+    main()
